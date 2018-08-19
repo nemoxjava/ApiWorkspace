@@ -1,0 +1,436 @@
+package com.framework.utility;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class DBUtils {
+
+	private static final Logger log = LogManager.getLogger(DBUtils.class.getName());
+
+	// קבלת סט נתונים ממסד
+	// Received SQL results object from DB
+	public static ResultSet getResultSet(String sqlStatement, String connectionStr, String userDB, String passDB) throws SQLException {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet retset = null;
+
+		// Load Oracle JDBC Driver class
+		try {
+			// Class.forName("oracle.jdbc.driver.OracleDriver");
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			log.info("Oracle Driver Class Not found Exception: " + e.toString());
+		}
+		// Set connection timeout. Make sure you set this correctly as per your
+		// need
+		DriverManager.setLoginTimeout(20);
+		// log.info("Oracle JDBC Driver Successfully Registered! Let's
+		// make connection now");
+
+		try {
+			// Attempts to establish a connection 
+		
+			conn = DriverManager.getConnection(connectionStr, userDB, passDB);
+		} catch (SQLException e) {
+			log.error("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
+
+		try {
+			stmt = conn.createStatement();
+			retset = stmt.executeQuery(sqlStatement);
+			if (retset.next()) {
+				// log.info("ResultSet success");
+				// retset.last();
+				return retset;
+			} else {
+				throw new SQLException("Can NOT retrieve details from db");
+			}
+		} catch (Exception e) {
+			log.error("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
+
+		return retset;
+	}// end method
+
+	// קבלת נתונים ממסד על פי פרמטרים של חיבור דינמי למסד
+	// Connect to DB by parameters and return result set.
+	public static ResultSet getResultSet_SetDB(String sqlStatement, String connStr, String conUser, String conPass)
+			throws SQLException {
+		log.info("Going to connect DB: " + connStr);
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet retset = null;
+
+		// Load Oracle JDBC Driver class
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			log.info("Oracle Driver Class Not found Exception: " + e.toString());
+		}
+		// Set connection timeout. Make sure you set this correctly as per your
+		DriverManager.setLoginTimeout(20);
+
+		try {
+			conn = DriverManager.getConnection(connStr, conUser, conPass);
+		} catch (SQLException e) {
+			log.info("Connection Failed! Check output console");
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.info("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
+
+		// prepare a connection and execute query
+		try {
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			retset = stmt.executeQuery(sqlStatement);
+			if (retset.next()) {
+				// log.info("ResultSet success");
+				retset.beforeFirst();
+				return retset;
+			} else {
+				throw new SQLException("Can NOT retrieve details from db");
+			}
+		} catch (SQLException e) {
+			log.info("Connection Failed! Check output console");
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.info("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
+		return retset;
+
+	}
+
+	// וידוא קבלה ריקה של שאילתא
+	// Verify empty result set from query
+	public static ResultSet verifyEmptyResultSet(String sqlStatement, String connStr, String conUser, String conPass) {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet retset;
+
+		// Load Oracle JDBC Driver class
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			log.info("Oracle Driver Class Not found Exception: " + e.toString());
+		}
+		// Set connection timeout. Make sure you set this correctly as per your
+		// need
+		DriverManager.setLoginTimeout(20);
+		try {
+			// Attempts to establish a connection
+			conn = DriverManager.getConnection(connStr, conUser, conPass);
+		} catch (SQLException e) {
+			log.info("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
+
+		try {
+			// prepare a connection and execute query
+			stmt = conn.createStatement();
+			retset = stmt.executeQuery(sqlStatement);
+			if (retset.next()) {
+				// log.info("ResultSet success.");
+				return retset;
+			} else {
+				log.info("ResultSet empty.");
+				return null;
+			}
+		} catch (SQLException e) {
+			log.info("Can NOT retrieve details from db.");
+			e.printStackTrace();
+			return null;
+		}
+		// return retset;
+	}// end method
+
+	/*
+	 * Function verifyItemQuery Description - gets an sql query and a column name
+	 * and a boolean value as expected result. returns true if the query gives back
+	 * a value and you expect that value to exist. bExpectation should be true.
+	 * otherwise in this case the function will return false (if the value does not
+	 * exist. The same is when you don't expect the value to exist, then give
+	 * bExpected = false. The func. will return false if the value exists and true
+	 * if does not. Paremeters: String sqlStatement, String sColumnName, boolean
+	 * bExpectation Return value: Boolean
+	 */
+	public static boolean verifyItemQuery(String sqlStatement, String sColumnName, boolean bExpectation, String connStr, String conUser, String conPass) {
+		ResultSet rset = null;
+		String sQueriedValue = null;
+		boolean bRetval = false;
+		try {
+			rset = DBUtils.getResultSet(sqlStatement, connStr, conUser, conPass);
+			if (rset != null) {
+				if (bExpectation == true) {
+					sQueriedValue = rset.getString(sColumnName);
+					log.info(sColumnName + " value:" + sQueriedValue);
+					rset = null;
+					bRetval = true;
+				} else {
+					log.info(sColumnName + " value:" + sQueriedValue);
+					bRetval = false;
+				}
+			} else {
+				if (bExpectation == true) {
+					log.info("Error. " + sColumnName + " value not found.");
+					bRetval = false;
+				} else {
+					log.info("Success. " + sColumnName + " value not found.");
+					bRetval = true;
+				}
+			}
+		} catch (SQLException e) {
+			log.info("SqlException error.");
+			e.printStackTrace();
+			rset = null;
+		} // end try-catch
+		return bRetval;
+	}
+
+	public static ResultSet getAddressResultSet(String sVille, String sAddressid, String connStr, String conUser, String conPass) {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet retset = null;
+
+		String sSqlAddressForRelocation = "select ad.service_address_id,ad.city,ad.street_name,ad.street_number,ad.unit_number,ad.suppl_addr_line as entrance "
+				+ "from wiz_hp_description ad " + "where ad.city = '" + sVille + "'" + " and ad.service_address_id <> "
+				+ sAddressid;
+
+		// Load Oracle JDBC Driver class
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			log.info("Oracle Driver Class Not found Exception: " + e.toString());
+		}
+		// Set connection timeout. Make sure you set this correctly as per your
+		// need
+		DriverManager.setLoginTimeout(20);
+		log.info("Oracle JDBC Driver Successfully Registered! Let's make connection now");
+
+		try {
+			// Attempts to establish a connection
+		
+			conn = DriverManager.getConnection(connStr, conUser, conPass);
+		} catch (SQLException e) {
+			log.info("Connection Failed! Check output console");
+			e.printStackTrace();
+		}
+
+		try {
+			// prepare a connection and execute query
+			stmt = conn.createStatement();
+			retset = stmt.executeQuery(sSqlAddressForRelocation);
+			if (retset.next()) {
+				log.info("ResultSet success");
+			} else {
+				throw new SQLException("Can NOT retrieve details from db");
+			}
+			log.info("Oracle JDBC connect and query test completed.");
+		} catch (SQLException e) {
+			log.info("Can NOT retrieve details from db\nQuery execution Failed! Check output console");
+			e.printStackTrace();
+		}
+		return retset;
+	}// end method
+
+	// קבלת ערך בודד ממסד נתונים לפי שם עמודה
+	// Receive single value from DB by Query by column name
+
+	// קבלת ערך בודד ממסד נתונים לפי שם עמודה
+	// Receive single value from DB by Query by column name
+	public static String getValueFromDb(String sqlStatement, String sFieldName, String sConn, String sUser,
+			String sPass) {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rsltset = null;
+		String retval = "";
+
+		log.info("Going to connect: " + sConn);
+		// Load Oracle JDBC Driver class
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			log.info("Oracle Driver Class Not found Exception: " + e.toString());
+		}
+		// Set connection timeout. Make sure you set this correctly as per your
+		// need
+		DriverManager.setLoginTimeout(20);
+		log.info("Oracle JDBC Driver Successfully Registered! Let's make connection now");
+		log.info("Retreiving single value from DB");
+		log.info("Connection Details are: " + sConn + " user: " + sUser + " pass:" + sPass);
+		log.info("Query is: " + sqlStatement);
+
+		try {
+			// Attempts to establish a connection
+
+			conn = DriverManager.getConnection(sConn, sUser, sPass);
+		} catch (SQLException e) {
+			log.error("Connection Failed! Check output console");
+			e.printStackTrace();
+			return retval;
+		}
+
+		try {
+			// prepare a connection and execute query
+			stmt = conn.createStatement();
+			rsltset = stmt.executeQuery(sqlStatement);
+
+			if (rsltset.next()) {
+				retval = rsltset.getString(sFieldName);
+				log.info("The value is: " + retval);
+			} else {
+				log.info("Query returned no Results, returning empty string..");
+				return "";
+			}
+			log.info("Oracle JDBC connect and query test completed.");
+			return retval;
+		} catch (SQLException e) {
+			log.info("Query execution Failed! Check output console");
+			e.printStackTrace();
+			return retval;
+		}
+	}// end method
+
+	public static String getValueFromDb_SetDB(String sqlStatement, String sFieldName, String connectionString,	String connectionUser, String connectionPass)  {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rsltset = null;
+		String retval = "";
+		int attempt = 0;
+
+		log.info("Going to connect: " + connectionString);
+		log.info("query to run: " + sqlStatement);
+
+		do {
+			GeneralUtility.Sleep(2);
+			attempt += 1;
+			log.info("Attempt no. " + attempt);
+			// Load Oracle JDBC Driver class
+			try {
+				Class.forName("oracle.jdbc.OracleDriver");
+			} catch (ClassNotFoundException e) {
+				log.info("Oracle Driver Class Not found Exception: " + e.toString());
+			}
+
+			DriverManager.setLoginTimeout(20);
+			log.info("Oracle JDBC Driver Successfully Registered! Let's make connection now");
+
+			try {
+				conn = DriverManager.getConnection(connectionString, connectionUser, connectionPass);
+			} catch (SQLException e) {
+				log.error("Connection Failed! Check output console");
+				e.printStackTrace();
+				return retval;
+			}
+
+			try {
+				// prepare a connection and execute query
+				stmt = conn.createStatement();
+				rsltset = stmt.executeQuery(sqlStatement);
+				// rsltset = stmt.executeQuery("select sysdate as current_day from
+				// dual");
+
+				if (rsltset.next()) {
+					retval = rsltset.getString(sFieldName);
+					log.info("The value is: " + retval);
+					return retval;
+				} else {
+					// throw new SQLException("Can NOT retrieve details from db");
+					log.info("Query returned no Results, go to attempt again: " + attempt + "/3");
+				}
+				log.info("Oracle JDBC connect and query test completed.");
+
+			} catch (Exception ex) {
+				log.info("Query execution Failed! Check output console");
+				ex.printStackTrace();
+			}
+
+		} while ((retval.isEmpty()) && attempt < 3);
+		if (retval.isEmpty())
+			log.error("Can NOT retrieve details from db");
+		return retval;
+
+	}
+
+	// החזרת מס' שורות לתוצאות שאילתא
+	// Return int result of row count of query results set
+	public static int ReturnRowCount(ResultSet resultSet) throws SQLException {
+
+		int RowCount = 0;
+		ResultSet resultSet2 = resultSet;
+
+		ResultSetMetaData rsmd = resultSet2.getMetaData();
+		int columnsNumber = rsmd.getColumnCount();
+		while (resultSet2.next()) {
+			for (int i = 1; i <= columnsNumber; i++) {
+			}
+			RowCount++;
+		}
+		return RowCount;
+	}
+
+	// Getting 2 dim Array from DB
+	public static String[][] getDataFromDB_AdvancedSearchUtil(String sSql, String connStr, String conUser,
+			String conPass) throws Exception {
+
+		log.info("Going to connect: " + connStr);
+
+		int rowNum = 0;
+		ResultSet resultSet = DBUtils.getResultSet_SetDB(sSql, connStr, conUser, conPass);
+
+		// For count the row
+		// ResultSet resultSetMiror = DBUtils.getResultSet_SetDB(sSql, connStr, conUser,
+		// conPass);
+		// GeneralUtility.Sleep(2);
+
+		if (resultSet.last()) {
+			rowNum = resultSet.getRow();
+			// Move to Beginning
+			resultSet.first();
+
+		} else {
+			return null;
+		}
+
+		ResultSetMetaData rsmd = resultSet.getMetaData();
+
+		String[][] tabArray = null;
+
+		// GeneralUtility.Sleep(1);
+		int colNum = rsmd.getColumnCount();
+
+		tabArray = new String[rowNum][colNum];
+
+		int ci = 0, cj;
+
+		int columnsNumber = rsmd.getColumnCount();
+		do {
+			cj = 0;
+			for (int i = 1; i <= columnsNumber; i++, cj++) {
+				if (i > 1) {
+					// System.out.print(", ");
+				}
+				String columnValue = resultSet.getString(i);
+				// GeneralUtility.Sleep(2);
+				if (!(columnValue == null))
+					tabArray[ci][cj] = columnValue;
+				else
+					tabArray[ci][cj] = "";
+				log.info("Data for test case: " + columnValue);
+			}
+			// log.info("");
+			ci++;
+		} while (resultSet.next());
+		return tabArray;
+	}
+}
+

@@ -1,0 +1,65 @@
+.metadata
+bin/
+tmp/
+*.tmp
+*.png
+*.jpg
+*.log
+*.bak
+*.swp
+*~.nib
+*.index
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+protect/HOT1/HotPortal_ver01/
+protect/HOT1/HotPortal_ver01_/
+protect/HotPortal_ver01/
+protect/HotPortal_ver01_Network/SeleniumCIProject/
+protect/SeleniumShare/
+*.log
+.metadata/.log
+*.gen
+*.zip
+.metadata/.plugins/org.eclipse.core.resources/.history/0/2083b20bdd87001714c3a2fe3cc0d430
+.metadata/.plugins/org.eclipse.core.resources/.history/1/f0945c73e487001714c3a2fe3cc0d430
+.metadata/.plugins/org.eclipse.core.resources/.history/12/00fad916f987001714c3a2fe3cc0d430

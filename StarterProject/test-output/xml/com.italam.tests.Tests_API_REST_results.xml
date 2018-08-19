@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="API Tests"
+           tests="8"
+           failures="0"
+           errors="0"
+           skipped="0"
+           time="17.723">
+  <properties />
+  
+  
+            <testcase name="apiTest_getOrgAdmin" time="1.599" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_UpdateEmail" time="1.438" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_UpdateOrgAdmin" time="1.823" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_AllCases" time="4.190" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_CreateOrganizationGetPassword" time="1.249" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_getOrganizationProfile" time="1.507" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTestUpdateorganizationLicensing" time="4.285" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_getInitialDatan" time="1.632" classname="com.italam.tests.Tests_API_REST" />
+      
+</testsuite>

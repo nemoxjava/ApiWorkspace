@@ -4,17 +4,17 @@
            failures="0"
            errors="0"
            skipped="0"
-           time="17.723">
+           time="16.727">
   <properties />
   
   
-            <testcase name="apiTest_getOrgAdmin" time="1.599" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTest_UpdateEmail" time="1.438" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTest_UpdateOrgAdmin" time="1.823" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTest_AllCases" time="4.190" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTest_CreateOrganizationGetPassword" time="1.249" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTest_getOrganizationProfile" time="1.507" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTestUpdateorganizationLicensing" time="4.285" classname="com.italam.tests.Tests_API_REST" />
-                <testcase name="apiTest_getInitialDatan" time="1.632" classname="com.italam.tests.Tests_API_REST" />
+            <testcase name="apiTestUpdateorganizationLicensing" time="4.319" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_UpdateEmail" time="1.732" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_AllCases" time="3.076" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_UpdateOrgAdmin" time="1.835" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_getOrgAdmin" time="1.538" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_getInitialDatan" time="1.564" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_getOrganizationProfile" time="1.438" classname="com.italam.tests.Tests_API_REST" />
+                <testcase name="apiTest_CreateOrganizationGetPassword" time="1.225" classname="com.italam.tests.Tests_API_REST" />
       
 </testsuite>
